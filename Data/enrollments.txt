@@ -1,0 +1,5 @@
+# studentId,courseCode,grade (grade may be empty)
+S1001,CS101,A
+S1001,CS201,B+
+S1002,ENG101,A-
+S1003,BUS101,

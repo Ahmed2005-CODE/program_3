@@ -1,0 +1,4 @@
+# id,name,email,department,office
+P001,Dr. Nabil Aziz,nabil@university.edu,Computer Science,A-101
+P002,Dr. Mona Saleh,mona@university.edu,Engineering,B-205
+P003,Dr. Karim Adel,karim@university.edu,Business,C-110

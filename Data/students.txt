@@ -1,0 +1,5 @@
+# id,name,email,major,year
+S1001,Ahmed Mohamed,ahmed@university.edu,Computer Science,3
+S1002,Sara Ali,sara@university.edu,Engineering,2
+S1003,Mohamed Hassan,mohamed@university.edu,Business,4
+S1004,Fatma Mahmoud,fatma@university.edu,Computer Science,1
