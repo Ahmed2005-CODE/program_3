@@ -24,40 +24,25 @@ public class StudentController {
 
     public StudentController() {
         view.getTable().setItems(allStudents);
+        view.getAddButton().setOnAction(event -> addStudent());
+        view.getEditButton().setOnAction(event -> editSelectedStudent());
+        view.getDeleteButton().setOnAction(event -> deleteSelectedStudent());
+        view.getRefreshButton().setOnAction(event -> refresh());
         setupSearch();
-        setupAddButton();
-        setupEditButton();
-        setupDeleteButton();
-        setupRefreshButton();
     }
 
     private void setupSearch() {
-        view.getSearchField().textProperty().addListener(
-                (observable, oldValue, newValue) -> filterStudents(newValue));
-    }
-
-    private void filterStudents(String searchText) {
-        String search = searchText.toLowerCase().trim();
-
-        if (search.isEmpty()) {
-            view.getTable().setItems(allStudents);
-            return;
-        }
-
-        ObservableList<Student> filtered = FXCollections.observableArrayList();
-        for (Student student : allStudents) {
-            if (student.getId().toLowerCase().contains(search)
-                    || student.getName().toLowerCase().contains(search)
-                    || student.getEmail().toLowerCase().contains(search)
-                    || student.getMajor().toLowerCase().contains(search)) {
-                filtered.add(student);
+        view.getSearchField().textProperty().addListener((observable, oldValue, text) -> {
+            String search = text.toLowerCase().trim();
+            ObservableList<Student> filtered = FXCollections.observableArrayList();
+            for (Student student : allStudents) {
+                if ((student.getId() + student.getName() + student.getEmail() + student.getMajor())
+                        .toLowerCase().contains(search)) {
+                    filtered.add(student);
+                }
             }
-        }
-        view.getTable().setItems(filtered);
-    }
-
-    private void setupAddButton() {
-        view.getAddButton().setOnAction(event -> addStudent());
+            view.getTable().setItems(search.isEmpty() ? allStudents : filtered);
+        });
     }
 
     private void addStudent() {
@@ -89,10 +74,6 @@ public class StudentController {
         } catch (NumberFormatException e) {
             Ui.error("Year must be a whole number (1 - 5).");
         }
-    }
-
-    private void setupEditButton() {
-        view.getEditButton().setOnAction(event -> editSelectedStudent());
     }
 
     private void editSelectedStudent() {
@@ -174,10 +155,6 @@ public class StudentController {
                 || student.getMajor().contains(",");
     }
 
-    private void setupDeleteButton() {
-        view.getDeleteButton().setOnAction(event -> deleteSelectedStudent());
-    }
-
     private void deleteSelectedStudent() {
         Student selected = view.getTable().getSelectionModel().getSelectedItem();
 
@@ -199,10 +176,6 @@ public class StudentController {
         view.getSearchField().clear();
         view.getTable().setItems(allStudents);
         Ui.info("Success", "Student deleted successfully.");
-    }
-
-    private void setupRefreshButton() {
-        view.getRefreshButton().setOnAction(event -> refresh());
     }
 
     public void refresh() {

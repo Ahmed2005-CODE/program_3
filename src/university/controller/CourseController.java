@@ -29,44 +29,31 @@ public class CourseController {
 
     public CourseController() {
         view.getTable().setItems(allCourses);
+        view.getAddButton().setOnAction(event -> addCourse());
+        view.getEditButton().setOnAction(event -> editSelectedCourse());
+        view.getDeleteButton().setOnAction(event -> deleteSelectedCourse());
+        view.getRefreshButton().setOnAction(event -> refresh());
         setupSearch();
-        setupAddButton();
-        setupEditButton();
-        setupDeleteButton();
-        setupRefreshButton();
     }
 
     private void setupSearch() {
-        view.getSearchField().textProperty().addListener(
-                (observable, oldValue, newValue) -> filterCourses(newValue));
-    }
-
-    private void filterCourses(String searchText) {
-        String search = searchText.toLowerCase().trim();
-
-        if (search.isEmpty()) {
-            view.getTable().setItems(allCourses);
-            return;
-        }
-
-        ObservableList<Course> filtered = FXCollections.observableArrayList();
-        for (Course course : allCourses) {
-            if (course.getCode().toLowerCase().contains(search)
-                    || course.getTitle().toLowerCase().contains(search)
-                    || course.getProfessorId().toLowerCase().contains(search)) {
-                filtered.add(course);
+        view.getSearchField().textProperty().addListener((observable, oldValue, text) -> {
+            String search = text.toLowerCase().trim();
+            ObservableList<Course> filtered = FXCollections.observableArrayList();
+            for (Course course : allCourses) {
+                if ((course.getCode() + course.getTitle() + course.getProfessorId())
+                        .toLowerCase().contains(search)) {
+                    filtered.add(course);
+                }
             }
-        }
-        view.getTable().setItems(filtered);
+            view.getTable().setItems(search.isEmpty() ? allCourses : filtered);
+        });
     }
 
     private List<Professor> professors() {
         return professorService.loadProfessors();
     }
 
-    private void setupAddButton() {
-        view.getAddButton().setOnAction(event -> addCourse());
-    }
 
     private void addCourse() {
         CourseFormView form = new CourseFormView(null, professors());
@@ -99,9 +86,6 @@ public class CourseController {
         }
     }
 
-    private void setupEditButton() {
-        view.getEditButton().setOnAction(event -> editSelectedCourse());
-    }
 
     private void editSelectedCourse() {
         Course selected = view.getTable().getSelectionModel().getSelectedItem();
@@ -169,9 +153,6 @@ public class CourseController {
         return true;
     }
 
-    private void setupDeleteButton() {
-        view.getDeleteButton().setOnAction(event -> deleteSelectedCourse());
-    }
 
     private void deleteSelectedCourse() {
         Course selected = view.getTable().getSelectionModel().getSelectedItem();
@@ -196,9 +177,6 @@ public class CourseController {
         Ui.info("Success", "Course deleted successfully.");
     }
 
-    private void setupRefreshButton() {
-        view.getRefreshButton().setOnAction(event -> refresh());
-    }
 
     public void refresh() {
         allCourses.setAll(service.loadCourses());

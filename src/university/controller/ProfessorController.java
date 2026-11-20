@@ -24,41 +24,27 @@ public class ProfessorController {
 
     public ProfessorController() {
         view.getTable().setItems(allProfessors);
+        view.getAddButton().setOnAction(event -> addProfessor());
+        view.getEditButton().setOnAction(event -> editSelectedProfessor());
+        view.getDeleteButton().setOnAction(event -> deleteSelectedProfessor());
+        view.getRefreshButton().setOnAction(event -> refresh());
         setupSearch();
-        setupAddButton();
-        setupEditButton();
-        setupDeleteButton();
-        setupRefreshButton();
     }
 
     private void setupSearch() {
-        view.getSearchField().textProperty().addListener(
-                (observable, oldValue, newValue) -> filterProfessors(newValue));
-    }
-
-    private void filterProfessors(String searchText) {
-        String search = searchText.toLowerCase().trim();
-
-        if (search.isEmpty()) {
-            view.getTable().setItems(allProfessors);
-            return;
-        }
-
-        ObservableList<Professor> filtered = FXCollections.observableArrayList();
-        for (Professor professor : allProfessors) {
-            if (professor.getId().toLowerCase().contains(search)
-                    || professor.getName().toLowerCase().contains(search)
-                    || professor.getEmail().toLowerCase().contains(search)
-                    || professor.getDepartment().toLowerCase().contains(search)) {
-                filtered.add(professor);
+        view.getSearchField().textProperty().addListener((observable, oldValue, text) -> {
+            String search = text.toLowerCase().trim();
+            ObservableList<Professor> filtered = FXCollections.observableArrayList();
+            for (Professor professor : allProfessors) {
+                if ((professor.getId() + professor.getName() + professor.getEmail()
+                        + professor.getDepartment()).toLowerCase().contains(search)) {
+                    filtered.add(professor);
+                }
             }
-        }
-        view.getTable().setItems(filtered);
+            view.getTable().setItems(search.isEmpty() ? allProfessors : filtered);
+        });
     }
 
-    private void setupAddButton() {
-        view.getAddButton().setOnAction(event -> addProfessor());
-    }
 
     private void addProfessor() {
         ProfessorFormView form = new ProfessorFormView(null);
@@ -86,9 +72,6 @@ public class ProfessorController {
         Ui.info("Success", "Professor added successfully.");
     }
 
-    private void setupEditButton() {
-        view.getEditButton().setOnAction(event -> editSelectedProfessor());
-    }
 
     private void editSelectedProfessor() {
         Professor selected = view.getTable().getSelectionModel().getSelectedItem();
@@ -154,9 +137,6 @@ public class ProfessorController {
         return true;
     }
 
-    private void setupDeleteButton() {
-        view.getDeleteButton().setOnAction(event -> deleteSelectedProfessor());
-    }
 
     private void deleteSelectedProfessor() {
         Professor selected = view.getTable().getSelectionModel().getSelectedItem();
@@ -181,9 +161,6 @@ public class ProfessorController {
         Ui.info("Success", "Professor deleted successfully.");
     }
 
-    private void setupRefreshButton() {
-        view.getRefreshButton().setOnAction(event -> refresh());
-    }
 
     public void refresh() {
         allProfessors.setAll(service.loadProfessors());
